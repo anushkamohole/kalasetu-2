@@ -1,0 +1,11 @@
+fastapi
+uvicorn[standard]
+python-multipart
+supabase
+Pillow
+qrcode[pil]
+python-dotenv
+httpx
+google-generativeai
+google-cloud-vision
+requests
