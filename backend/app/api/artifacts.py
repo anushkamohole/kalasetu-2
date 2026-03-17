@@ -3,6 +3,7 @@ Artifact Routes - Core product ingestion, AI processing, QR generation, and buye
 """
 import uuid
 import base64
+import hashlib
 from fastapi import APIRouter, UploadFile, File, Form, HTTPException
 from app.core.config import supabase, APP_BASE_URL
 from app.services.ai_service import transcribe_audio_mock, analyze_image_mock, generate_story_mock
@@ -72,11 +73,17 @@ async def process_artifact(
         transcript = await transcribe_audio_mock(voice_url)
         story_texts = await generate_story_mock(transcript, vision_result, vision_result["art_form"])
 
+        # --- Cryptographic Provenance Engine ---
+        # Hash core immutable data
+        core_data = f"{artisan_id}|{vision_result['art_form']}|{image_url}"
+        crypto_sig = hashlib.sha256(core_data.encode("utf-8")).hexdigest()
+
         # --- Step 4: Insert artifact into DB ---
         artifact_data = {
             "artisan_id": artisan_id,
             "art_form": vision_result["art_form"],
             "image_url": image_url,
+            "cryptographic_signature": crypto_sig,
         }
         artifact_resp = supabase.table("artifacts").insert(artifact_data).execute()
         artifact_id = artifact_resp.data[0]["id"]
@@ -114,10 +121,38 @@ async def approve_story(artifact_id: str):
         raise HTTPException(status_code=500, detail=str(e))
 
 
+@router.get("/{artifact_id}/verify")
+async def verify_artifact(artifact_id: str):
+    """Cryptographic Verification Endpoint."""
+    try:
+        artifact = supabase.table("artifacts").select("*").eq("id", artifact_id).single().execute()
+        if not artifact.data:
+            raise HTTPException(status_code=404, detail="Artifact not found")
+
+        data = artifact.data
+        # Recalculate hash from immutable fields
+        artisan_id_val = str(data.get("artisan_id") or "")
+        art_form_val = str(data.get("art_form") or "")
+        image_url_val = str(data.get("image_url") or "")
+        
+        core_data = f"{artisan_id_val}|{art_form_val}|{image_url_val}"
+        recalculated_sig = hashlib.sha256(core_data.encode("utf-8")).hexdigest()
+        
+        stored_sig = data.get("cryptographic_signature", "")
+        
+        return {"verified": recalculated_sig == stored_sig}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+
 @router.post("/{artifact_id}/generate-qr")
 async def generate_qr(artifact_id: str):
     """Generates a QR code for the artifact's buyer scan URL and stores it in the DB."""
-    scan_url = f"{APP_BASE_URL}/scan/{artifact_id}"
+    # Fetch the cryptographic signature for the URL parameters
+    artifact_req = supabase.table("artifacts").select("cryptographic_signature").eq("id", artifact_id).single().execute()
+    crypto_sig = artifact_req.data.get("cryptographic_signature", "")
+
+    scan_url = f"{APP_BASE_URL}/scan/{artifact_id}?sig={crypto_sig}"
     qr_base64 = generate_qr_code_base64(scan_url)
 
     # Upload QR PNG to Supabase storage

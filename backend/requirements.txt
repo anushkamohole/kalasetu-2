@@ -6,6 +6,6 @@ Pillow
 qrcode[pil]
 python-dotenv
 httpx
-google-generativeai
+anthropic
 google-cloud-vision
 requests

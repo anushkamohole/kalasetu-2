@@ -11,7 +11,9 @@
   },
   "dependencies": {
     "@vishalvoid/react-india-map": "^1.2.0",
+    "@yudiel/react-qr-scanner": "^2.5.1",
     "axios": "^1.13.5",
+    "framer-motion": "^12.35.0",
     "leaflet": "^1.9.4",
     "lucide-react": "^0.575.0",
     "prop-types": "^15.8.1",

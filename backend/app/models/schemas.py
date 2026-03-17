@@ -16,11 +16,11 @@ class ArtisanResponse(BaseModel):
     id: str
     phone_number: str
     name: str
-    location_lat: Optional[float]
-    location_long: Optional[float]
-    state: Optional[str]
-    upi_id: Optional[str]
-    created_at: Optional[str]
+    location_lat: Optional[float] = None
+    location_long: Optional[float] = None
+    state: Optional[str] = None
+    upi_id: Optional[str] = None
+    created_at: Optional[str] = None
 
 
 class ArtifactResponse(BaseModel):

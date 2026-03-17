@@ -30,8 +30,12 @@ CREATE TABLE IF NOT EXISTS artifacts (
   art_form TEXT,
   image_url TEXT,
   qr_code_url TEXT,
+  cryptographic_signature TEXT,
   created_at TIMESTAMPTZ DEFAULT NOW()
 );
+
+-- Run this if the table already exists (Supabase SQL Editor):
+-- ALTER TABLE artifacts ADD COLUMN IF NOT EXISTS cryptographic_signature TEXT;
 
 -- ============================================================
 -- TABLE: stories

@@ -17,158 +17,136 @@ const STATE_HERITAGE = {
         emoji: '🏰',
         crafts: ['Blue Pottery', 'Bandhani Tie-dye', 'Thewa Jewellery', 'Block Printing'],
         desc: "The land of magnificent forts and vibrant folk traditions. Rajasthan's crafts carry the spirit of the desert.",
-        accent: '#FF6B1A',
+        accent: '#C45C1A',
     },
     Gujarat: {
         emoji: '🧵',
         crafts: ['Patola Silk Weaving', 'Kutch Embroidery', 'Bandhani', 'Rogan Art'],
         desc: "Gujarat's textile legacy is unmatched — from the ikat excellence of Patola to the mirror-work of Kutch.",
-        accent: '#F59E0B',
+        accent: '#B45309',
     },
     'West Bengal': {
         emoji: '🎨',
         crafts: ['Kantha Embroidery', 'Dokra Metal Craft', 'Patachitra', 'Terracotta'],
         desc: "A cradle of cultural renaissance. Bengal's artisans have documented epics on terracotta and cloth.",
-        accent: '#0D9488',
+        accent: '#0F766E',
     },
     Odisha: {
         emoji: '📜',
         crafts: ['Pattachitra', 'Dokra', 'Sambalpuri Ikat', 'Stone Carving'],
         desc: "Odisha's Pattachitra scrolls have told the stories of Lord Jagannath for centuries.",
-        accent: '#8B5CF6',
+        accent: '#7C3AED',
     },
     Maharashtra: {
         emoji: '🖌️',
         crafts: ['Warli Painting', 'Paithani Silk Sarees', 'Kolhapuri Chappals', 'Bidriware'],
         desc: "Maharashtra blends tribal artistry with royal weaves. Warli's geometric folk art is iconic worldwide.",
-        accent: '#EC4899',
+        accent: '#C0392B',
     },
     Bihar: {
         emoji: '🌸',
         crafts: ['Madhubani Painting', 'Sujani Embroidery', 'Tikuli Art', 'Sikki Grass Craft'],
         desc: "The birthplace of Madhubani art. Each painting is an entire cosmos of gods, nature, and womanhood.",
-        accent: '#3B82F6',
+        accent: '#3730A3',
     },
     'Uttar Pradesh': {
         emoji: '🕌',
         crafts: ['Chikankari Embroidery', 'Zari-Zardozi', 'Banaras Silk', 'Brass Craft'],
         desc: "From Lucknow's Chikankari ateliers to Varanasi's looms — UP carries Mughal craft heritage alive.",
-        accent: '#10B981',
+        accent: '#166534',
     },
     Karnataka: {
         emoji: '🥻',
         crafts: ['Mysore Silk', 'Bidriware', 'Channapatna Toys', 'Kasuti Embroidery'],
         desc: "Karnataka's Channapatna wooden toys and Bidri inlay work represent a tradition of intricate craftsmanship.",
-        accent: '#F97316',
+        accent: '#C45C1A',
     },
     'Tamil Nadu': {
         emoji: '🏺',
         crafts: ['Kanjivaram Silk', 'Tanjore Painting', 'Bronze Casting', 'Kolam Art'],
         desc: "Tamil Nadu's artisans have shaped bronze gods, woven divine silks, and painted celestial panels for millennia.",
-        accent: '#EF4444',
+        accent: '#C0392B',
     },
     'Madhya Pradesh': {
         emoji: '🐘',
         crafts: ['Gond Painting', 'Chanderi Silk', 'Bagh Print', 'Dhokra'],
         desc: "Home to the Gond tribe's extraordinary tree-of-life paintings. Every dot is a prayer to nature.",
-        accent: '#84CC16',
+        accent: '#4D7C0F',
     },
     'Himachal Pradesh': {
         emoji: '🏔️',
         crafts: ['Kullu Shawls', 'Thangka Painting', 'Wood Carving', 'Chamba Rumal'],
         desc: "High in the Himalayas, artisans weave warmth into woollens and meditative stillness into Thangka paintings.",
-        accent: '#06B6D4',
+        accent: '#0369A1',
     },
     Assam: {
         emoji: '🦢',
         crafts: ['Muga Silk', 'Mekhela Chador Weaving', 'Bamboo and Cane Craft', 'Xorai'],
         desc: "Assam's Muga silk — the golden thread of the Brahmaputra — is one of the rarest fabrics in the world.",
-        accent: '#A78BFA',
+        accent: '#7C3AED',
     },
     Punjab: {
         emoji: '🌾',
         crafts: ['Phulkari Embroidery', 'Jutti Craft', 'Pottery', 'Durrie Weaving'],
         desc: "Punjab's Phulkari — literally 'flower work' — transforms cloth into explosions of silk-thread color.",
-        accent: '#FBBF24',
+        accent: '#B45309',
     },
     Kerala: {
         emoji: '🥥',
         crafts: ['Kathakali Costumes', 'Coir Weaving', 'Nettoor Petti Lacquerware', 'Keralan Mural'],
         desc: "Kerala's artisans blend ritual, nature, and colour — from resplendent Kathakali headdresses to coconut-shell craft.",
-        accent: '#22C55E',
+        accent: '#166534',
     },
     Chhattisgarh: {
         emoji: '🔱',
         crafts: ['Dhokra Casting', 'Bell Metal Work', 'Bamboo Craft', 'Godna Tattoo Art'],
         desc: "Chhattisgarh is the heartland of Dhokra — the world's oldest lost-wax metal casting tradition.",
-        accent: '#B45309',
+        accent: '#92400E',
     },
 }
 
-const DEFAULT_FILL = '#2D2545'
+/* ── Map fill colours ─────────────────────────────────────────────────────── */
+const DEFAULT_FILL = '#E5E0D8'   // warm beige for unselected states
+const DEFAULT_STROKE = '#C8BCA8'  // subtle warm border
 
-/* ── Ambient chime via Web Audio API (no file required) ───────────────────── */
+/* ── Chime via Web Audio API ─────────────────────────────────────────────── */
 let audioCtx = null
 function playChime(accentHex) {
     try {
         if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)()
         const ctx = audioCtx
         if (ctx.state === 'suspended') ctx.resume()
-
-        // Convert hex to a frequency offset for a pleasant pentatonic chime
         const hueVal = parseInt(accentHex.replace('#', '').slice(0, 2), 16)
         const pentatonic = [261.63, 293.66, 329.63, 392.00, 440.00, 523.25]
         const freq = pentatonic[hueVal % pentatonic.length]
-
         const osc = ctx.createOscillator()
         const gain = ctx.createGain()
         const now = ctx.currentTime
-
         osc.type = 'sine'
         osc.frequency.setValueAtTime(freq, now)
         osc.frequency.exponentialRampToValueAtTime(freq * 1.5, now + 0.12)
-
         gain.gain.setValueAtTime(0, now)
-        gain.gain.linearRampToValueAtTime(0.18, now + 0.04)
+        gain.gain.linearRampToValueAtTime(0.16, now + 0.04)
         gain.gain.exponentialRampToValueAtTime(0.001, now + 1.0)
-
         osc.connect(gain)
         gain.connect(ctx.destination)
         osc.start(now)
         osc.stop(now + 1.1)
-    } catch (_) { /* AudioContext unavailable — silent fail */ }
-}
-
-/* ── SVG drop-shadow filter injected once ─────────────────────────────────── */
-const MAP_FILTER_SVG = `
-  <svg xmlns="http://www.w3.org/2000/svg" width="0" height="0" style="position:absolute">
-    <defs>
-      <filter id="state-glow" x="-20%" y="-20%" width="140%" height="140%">
-        <feGaussianBlur in="SourceGraphic" stdDeviation="3" result="blur"/>
-        <feColorMatrix in="blur" mode="matrix"
-          values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 18 -7" result="glow"/>
-        <feMerge><feMergeNode in="glow"/><feMergeNode in="SourceGraphic"/></feMerge>
-      </filter>
-    </defs>
-  </svg>
-`
-
-let mapFilterInjected = false
-function ensureMapFilter() {
-    if (mapFilterInjected) return
-    const div = document.createElement('div')
-    div.innerHTML = MAP_FILTER_SVG
-    document.body.appendChild(div.firstElementChild)
-    mapFilterInjected = true
+    } catch (_) { }
 }
 
 /* ── Memoised StateGeo ────────────────────────────────────────────────────── */
 const StateGeo = memo(function StateGeo({ geo, accent, isSelected, isHovered, onEnter, onLeave, onClick }) {
+    // Heritage fills: beige default → warm saffron hover → full accent selected
     const fill = isSelected
-        ? (accent || '#FF6B1A')
+        ? (accent || '#C45C1A')
         : isHovered
-            ? (accent ? accent + 'BB' : '#3D3060')
+            ? (accent ? accent + 'BB' : '#C45C1ABB')
             : DEFAULT_FILL
+
+    const strokeColor = isHovered || isSelected
+        ? (accent || '#C45C1A')
+        : DEFAULT_STROKE
 
     return (
         <Geography
@@ -179,25 +157,24 @@ const StateGeo = memo(function StateGeo({ geo, accent, isSelected, isHovered, on
             style={{
                 default: {
                     fill,
-                    stroke: isHovered || isSelected ? (accent || '#FF6B1A') : '#5A5075',
-                    strokeWidth: isHovered || isSelected ? 1.2 : 0.6,
+                    stroke: strokeColor,
+                    strokeWidth: isHovered || isSelected ? 1.5 : 0.8,
                     outline: 'none',
-                    transition: 'fill 0.15s ease, stroke 0.15s ease',
-                    filter: isHovered || isSelected ? 'url(#state-glow)' : 'none',
+                    transition: 'fill 0.18s ease, stroke 0.18s ease',
                     cursor: 'pointer',
                 },
                 hover: {
-                    fill: accent ? accent + 'BB' : '#3D3060',
-                    stroke: accent || '#FF6B1A',
-                    strokeWidth: 1.2,
+                    fill: accent ? accent + 'BB' : '#C45C1ABB',
+                    stroke: accent || '#C45C1A',
+                    strokeWidth: 1.5,
                     outline: 'none',
-                    filter: 'url(#state-glow)',
                     cursor: 'pointer',
                 },
                 pressed: {
-                    fill: accent || '#FF6B1A',
+                    fill: accent || '#C45C1A',
+                    stroke: accent || '#C45C1A',
+                    strokeWidth: 1.5,
                     outline: 'none',
-                    filter: 'url(#state-glow)',
                 },
             }}
         />
@@ -210,17 +187,14 @@ export default function CulturalMap() {
     const [selectedState, setSelectedState] = useState(null)
     const lastChimeState = useRef(null)
 
-    ensureMapFilter()
-
     const getStateName = (geo) =>
         geo.properties.NAME_1 || geo.properties.st_nm || geo.properties.name || ''
 
     const handleEnter = useCallback((name) => {
         setHoveredState(name)
-        // Play chime only once per new state-hover (not on re-hover)
         if (name !== lastChimeState.current && STATE_HERITAGE[name]) {
             lastChimeState.current = name
-            playChime(STATE_HERITAGE[name]?.accent || '#FF6B1A')
+            playChime(STATE_HERITAGE[name]?.accent || '#C45C1A')
         }
     }, [])
 
@@ -232,31 +206,29 @@ export default function CulturalMap() {
         <div style={{ position: 'relative', width: '100%' }}>
             <div style={{ display: 'flex', alignItems: 'flex-start', gap: '0', flexWrap: 'wrap' }}>
 
-                {/* ── SVG India Map ─────────────────────────────────── */}
+                {/* ── SVG India Map ──────────────────────────────────────── */}
                 <div style={{ flex: '1 1 340px', minWidth: '300px', position: 'relative' }}>
 
                     {/* Hover tooltip */}
                     {hoveredState && !selectedState && (
                         <div style={{
-                            position: 'absolute', top: '10px', left: '50%',
+                            position: 'absolute', top: '12px', left: '50%',
                             transform: 'translateX(-50%)',
-                            background: 'rgba(26,22,37,0.94)',
-                            border: `1px solid ${STATE_HERITAGE[hoveredState]?.accent || 'rgba(255,107,26,0.45)'}55`,
+                            background: 'rgba(255,252,248,0.97)',
+                            border: `1.5px solid ${STATE_HERITAGE[hoveredState]?.accent || '#C45C1A'}55`,
                             borderRadius: '10px', padding: '6px 16px',
                             fontSize: '13px', fontWeight: '600',
-                            color: STATE_HERITAGE[hoveredState]?.accent || 'var(--saffron)',
+                            color: STATE_HERITAGE[hoveredState]?.accent || '#C45C1A',
                             pointerEvents: 'none', whiteSpace: 'nowrap', zIndex: 20,
                             display: 'flex', alignItems: 'center', gap: '6px',
-                            boxShadow: `0 4px 20px ${STATE_HERITAGE[hoveredState]?.accent || '#FF6B1A'}33`,
-                            backdropFilter: 'blur(8px)',
+                            boxShadow: '0 4px 18px rgba(80,40,10,0.12)',
                         }}>
                             <MapPin size={11} />
                             {hoveredState}
                             {STATE_HERITAGE[hoveredState] && (
                                 <>
-                                    <span style={{ color: 'rgba(255,255,255,0.35)', fontWeight: '400', marginLeft: '2px' }}>·</span>
-                                    <Volume2 size={10} style={{ opacity: 0.5 }} />
-                                    <span style={{ color: 'rgba(255,255,255,0.4)', fontWeight: '400' }}>click to explore</span>
+                                    <span style={{ color: '#B09070', fontWeight: '400', marginLeft: '2px' }}>·</span>
+                                    <span style={{ color: '#B09070', fontWeight: '400', fontSize: '12px' }}>click to explore</span>
                                 </>
                             )}
                         </div>
@@ -264,7 +236,7 @@ export default function CulturalMap() {
 
                     <ComposableMap
                         projection="geoMercator"
-                        projectionConfig={{ scale: 1050, center: [82.8, 22.5] }}
+                        projectionConfig={{ scale: 950, center: [80, 22] }}
                         style={{ width: '100%', height: 'auto' }}
                     >
                         <ZoomableGroup zoom={1} minZoom={1} maxZoom={4}>
@@ -296,27 +268,28 @@ export default function CulturalMap() {
                     </ComposableMap>
 
                     <p style={{
-                        textAlign: 'center', color: 'rgba(255,255,255,0.2)',
-                        fontSize: '11px', paddingBottom: '8px', userSelect: 'none',
+                        textAlign: 'center', color: '#B09070',
+                        fontSize: '11px', paddingBottom: '10px', userSelect: 'none',
                         display: 'flex', alignItems: 'center', justifyContent: 'center', gap: '6px',
                     }}>
-                        <Volume2 size={10} style={{ opacity: 0.4 }} />
+                        <Volume2 size={10} style={{ opacity: 0.5 }} />
                         Scroll to zoom · Drag to pan · Hover for chime · Click to explore
                     </p>
                 </div>
 
-                {/* ── Side Panel ──────────────────────────────────── */}
+                {/* ── Side Panel ────────────────────────────────────────── */}
                 <div style={{
                     flex: '0 0 268px', minWidth: '230px',
                     padding: '24px 20px',
-                    borderLeft: '1px solid rgba(255,255,255,0.07)',
+                    borderLeft: '1px solid #EDE7DC',
                     minHeight: '420px',
                     display: 'flex', flexDirection: 'column',
                     justifyContent: info ? 'flex-start' : 'center',
+                    background: '#FDFAF6',
                 }}>
                     {info ? (
                         <>
-                            {/* Close + accent stripe */}
+                            {/* Accent stripe */}
                             <div style={{
                                 height: '3px', borderRadius: '99px', marginBottom: '16px',
                                 background: `linear-gradient(90deg, ${info.accent}, transparent)`,
@@ -325,20 +298,22 @@ export default function CulturalMap() {
                             <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: '12px' }}>
                                 <span style={{ fontSize: '36px' }}>{info.emoji}</span>
                                 <button onClick={() => setSelectedState(null)} style={{
-                                    background: 'rgba(255,255,255,0.06)', border: '1px solid rgba(255,255,255,0.1)',
+                                    background: '#F1EBE0', border: '1px solid #DDD3C0',
                                     borderRadius: '8px', cursor: 'pointer',
-                                    color: 'var(--text-muted)', padding: '4px',
+                                    color: '#78614A', padding: '4px',
                                     display: 'flex', alignItems: 'center', justifyContent: 'center',
+                                    transition: 'all 0.15s',
                                 }}>
                                     <X size={14} />
                                 </button>
                             </div>
 
                             <h3 style={{
-                                fontWeight: '800', fontSize: '21px', marginBottom: '6px',
+                                fontFamily: "'Playfair Display', serif",
+                                fontWeight: '800', fontSize: '22px', marginBottom: '6px',
                                 color: info.accent,
                             }}>{selectedState}</h3>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '12px', lineHeight: '1.75', marginBottom: '18px' }}>
+                            <p style={{ color: '#78614A', fontSize: '12px', lineHeight: '1.75', marginBottom: '18px' }}>
                                 {info.desc}
                             </p>
 
@@ -353,10 +328,10 @@ export default function CulturalMap() {
                                 {info.crafts.map(craft => (
                                     <div key={craft} style={{
                                         padding: '9px 12px',
-                                        background: info.accent + '12',
+                                        background: info.accent + '10',
                                         borderRadius: '10px',
                                         border: `1px solid ${info.accent}28`,
-                                        fontSize: '13px', color: 'var(--text-primary)',
+                                        fontSize: '13px', color: '#2C1A0E',
                                         display: 'flex', alignItems: 'center', gap: '8px',
                                     }}>
                                         <span style={{ width: '6px', height: '6px', borderRadius: '50%', background: info.accent, flexShrink: 0 }} />
@@ -368,10 +343,10 @@ export default function CulturalMap() {
                     ) : (
                         <div style={{ textAlign: 'center' }}>
                             <div style={{ fontSize: '40px', marginBottom: '12px' }}>🗺️</div>
-                            <p style={{ fontWeight: '600', fontSize: '14px', color: 'var(--text-primary)', marginBottom: '6px' }}>
+                            <p style={{ fontFamily: "'Playfair Display', serif", fontWeight: '600', fontSize: '14px', color: '#2C1A0E', marginBottom: '6px' }}>
                                 Explore by State
                             </p>
-                            <p style={{ color: 'var(--text-muted)', fontSize: '12px', lineHeight: '1.7' }}>
+                            <p style={{ color: '#78614A', fontSize: '12px', lineHeight: '1.7' }}>
                                 Click any state on the map to discover its traditional crafts and cultural heritage.
                             </p>
                             {hoveredState && STATE_HERITAGE[hoveredState] && (
@@ -380,11 +355,12 @@ export default function CulturalMap() {
                                         display: 'inline-flex', alignItems: 'center', gap: '5px',
                                         borderColor: STATE_HERITAGE[hoveredState].accent + '55',
                                         color: STATE_HERITAGE[hoveredState].accent,
+                                        background: STATE_HERITAGE[hoveredState].accent + '12',
                                     }}>
                                         <MapPin size={10} />
                                         {hoveredState}
                                     </span>
-                                    <p style={{ color: 'rgba(255,255,255,0.3)', fontSize: '11px', marginTop: '8px' }}>
+                                    <p style={{ color: '#B09070', fontSize: '11px', marginTop: '8px' }}>
                                         🔔 Chime played
                                     </p>
                                 </div>
