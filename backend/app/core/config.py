@@ -17,3 +17,4 @@ supabase: Client = create_client(SUPABASE_URL, SUPABASE_SERVICE_KEY) if SUPABASE
 
 GOOGLE_API_KEY: str = os.environ.get("GOOGLE_API_KEY", "")
 OPENROUTER_API_KEY: str=os.environ.get("OPENROUTER_API_KEY", "")
+SARVAM_API_KEY: str = os.environ.get("SARVAM_API_KEY", "")

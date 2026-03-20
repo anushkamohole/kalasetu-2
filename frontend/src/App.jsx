@@ -5,6 +5,7 @@ import ArtisanApp from './pages/ArtisanApp'
 import ScanPage from './pages/ScanPage'
 import ArtSnapPage from './pages/ArtSnapPage'
 import ArtformDetails from './pages/ArtformDetails'
+import BuyerHeatmap from './pages/BuyerHeatmap'
 import './index.css'
 
 export default function App() {
@@ -19,6 +20,7 @@ export default function App() {
           <Route path="/scan/:artifactId" element={<ScanPage />} />
           <Route path="/artsnap" element={<ArtSnapPage />} />
           <Route path="/artform/:slug" element={<ArtformDetails />} />
+          <Route path="/heatmap" element={<BuyerHeatmap />} />
         </Routes>
       </div>
     </Router>

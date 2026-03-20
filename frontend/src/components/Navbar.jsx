@@ -170,9 +170,11 @@ export default function Navbar() {
             </Link>
 
             {/* Center nav links */}
+            {/* Center nav links */}
             <div style={{ display: 'flex', alignItems: 'center', gap: '4px' }}>
                 <NavLink to="/" icon={<Palette size={15} />} label="Discover" active={location.pathname === '/'} />
                 <NavLink to="/artsnap" icon={<Camera size={15} />} label="ArtSnap" active={location.pathname === '/artsnap'} />
+                <NavLink to="/heatmap" icon={<span style={{ fontSize: '13px' }}>🔥</span>} label="Insights" active={location.pathname === '/heatmap'} />
             </div>
 
             {/* Right */}
